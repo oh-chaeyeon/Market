@@ -21,7 +21,6 @@ class SignUpActivity : AppCompatActivity() {
 
         val signupId = findViewById<EditText>(R.id.sign_up_id)
         val signupPassword = findViewById<EditText>(R.id.sign_up_password)
-        val signupNickname = findViewById<TextView>(R.id.sign_up_name)
 
         val sign_up = findViewById(R.id.sign_up) as Button
         sign_up.setOnClickListener {
