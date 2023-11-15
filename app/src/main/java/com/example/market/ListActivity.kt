@@ -1,5 +1,6 @@
 package com.example.market
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -24,7 +25,12 @@ class ListActivity : AppCompatActivity() {
 
         firestore = FirebaseFirestore.getInstance()
         recyclerView = binding.recyclerView
-        adapter = ProductAdapter()
+        adapter = ProductAdapter { clickedProduct ->
+            // Start DetailActivity and pass the clicked product
+            val intent = Intent(this@ListActivity, DetailActivity::class.java)
+            intent.putExtra("productModel", clickedProduct)
+            this@ListActivity.startActivity(intent)
+        }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -50,7 +56,7 @@ class ListActivity : AppCompatActivity() {
         }
     }
 
-    inner class ProductAdapter : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
+    inner class ProductAdapter(private val click: (Product) -> Unit) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
         private var products: List<Product> = emptyList()
 
         fun setProducts(products: List<Product>) {
@@ -64,7 +70,8 @@ class ListActivity : AppCompatActivity() {
                     // Handle item click
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
-                        // Do something with the clicked item
+                        val clickedProduct = products[position]
+                        click.invoke(clickedProduct)
                     }
                 }
             }
@@ -76,7 +83,7 @@ class ListActivity : AppCompatActivity() {
                     .into(binding.imageView)
 
                 binding.titleTextView.text = product.title
-                binding.priceTextView.text = product.price
+                binding.priceTextView.text = product.price+"원"
             }
         }
 
@@ -94,6 +101,8 @@ class ListActivity : AppCompatActivity() {
         }
     }
 }
+
+
 
 
 
