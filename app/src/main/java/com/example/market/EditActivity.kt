@@ -24,8 +24,8 @@ class EditActivity : AppCompatActivity() {
         documentId = intent.getStringExtra("documentId")
 
         // Display the current price and sell status
-        binding.priceTextView2.text = product?.price.orEmpty()
-        binding.sellTextView2.text = product?.sell.orEmpty()
+        binding.priceTextView2.hint = product?.price.orEmpty()
+        binding.sellTextView2.hint = product?.sell.orEmpty()
 
         // Set up click listener for the "수정완료" button
         binding.button4.setOnClickListener {
@@ -36,8 +36,10 @@ class EditActivity : AppCompatActivity() {
 
     private fun updateProduct() {
         // Get the modified price and sell status
-        val modifiedPrice = binding.priceTextView2.text.toString()
-        val modifiedSellStatus = binding.sellTextView2.text.toString()
+        var modifiedPrice = binding.priceTextView2.text.toString()
+        if(modifiedPrice==null) modifiedPrice=product?.price.orEmpty()
+        var modifiedSellStatus = binding.sellTextView2.text.toString()
+            if(modifiedSellStatus==null) modifiedSellStatus=product?.sell.orEmpty()
 
         // Update the product in Firestore using the document ID
         val productRef = firestore?.collection("products")?.document(documentId!!)
