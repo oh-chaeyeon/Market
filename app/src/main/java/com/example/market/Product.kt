@@ -11,5 +11,7 @@ data class Product(
     @SerializedName("title")val title: String = "",
     @SerializedName("price")val price: String = "",
     @SerializedName("image")val imageUrl: String = "",
-    @SerializedName("content") val content: String = ""
-): Parcelable
+    @SerializedName("content") val content: String = "",
+    @SerializedName("sell") val sell: String = "",
+): Parcelable {
+}

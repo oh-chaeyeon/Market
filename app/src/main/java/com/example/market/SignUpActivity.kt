@@ -32,7 +32,8 @@ class SignUpActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         // 등록 성공
                         val user = auth?.currentUser
-                        val intent = Intent(this, SignInActivity::class.java)
+                        val intent = Intent(this, ListActivity::class.java)
+                        intent.putExtra("userEmail", id)
                         startActivity(intent)
                     } else {
                         // 등록 실패

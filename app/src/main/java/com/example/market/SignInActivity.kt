@@ -38,6 +38,7 @@ class SignInActivity : AppCompatActivity() {
                         // 원하는 액티비티로 이동
                         val intent = Intent(this,ListActivity::class.java)
                         Log.d("SignInActivity", "Before starting ListActivity")
+                        intent.putExtra("userEmail", id)
                         startActivity(intent)
                         Log.d("SignInActivity", "After starting ListActivity")
                         // 현재 액티비티를 종료합니다.

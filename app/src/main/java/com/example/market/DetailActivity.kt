@@ -19,8 +19,9 @@ class DetailActivity : AppCompatActivity() {
         val product = intent.getParcelableExtra<Product>("productModel")
 
         binding.titleTextView.text = product?.title.orEmpty()
-        binding.priceTextView.text = product?.price.orEmpty()
+        binding.priceTextView.text = product?.price.orEmpty() +"원"
         binding.contentTextView.text=product?.content.orEmpty()
+        binding.sellTextView.text=product?.sell.orEmpty()
 
         Glide.with(binding.root.context)
             .load(product?.imageUrl)

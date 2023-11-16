@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.market.databinding.ActivityListBinding
 import com.example.market.databinding.ListItemBinding
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ListActivity : AppCompatActivity() {
@@ -23,18 +24,35 @@ class ListActivity : AppCompatActivity() {
         binding = ActivityListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Get the email of the logged-in user
+        val loggedInUserEmail: String? = getCurrentLoggedInUserEmail()
+
         firestore = FirebaseFirestore.getInstance()
         recyclerView = binding.recyclerView
-        adapter = ProductAdapter { clickedProduct ->
-            // Start DetailActivity and pass the clicked product
-            val intent = Intent(this@ListActivity, DetailActivity::class.java)
-            intent.putExtra("productModel", clickedProduct)
-            this@ListActivity.startActivity(intent)
+
+        // Pass the user email to the adapter
+        adapter = ProductAdapter(loggedInUserEmail) { clickedProduct, documentId ->
+            if (loggedInUserEmail == intent.getStringExtra("userEmail")) {
+                // If the logged-in user is the author, go to EditActivity
+                val intent = Intent(this@ListActivity, EditActivity::class.java)
+                intent.putExtra("productModel", clickedProduct)
+                intent.putExtra("documentId", documentId)
+                this@ListActivity.startActivity(intent)
+            } else {
+                // If the logged-in user is not the author, go to DetailActivity
+                val intent = Intent(this@ListActivity, DetailActivity::class.java)
+                intent.putExtra("productModel", clickedProduct)
+                this@ListActivity.startActivity(intent)
+            }
         }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         loadProducts()
+    }
+
+    private fun getCurrentLoggedInUserEmail(): String? {
+        return FirebaseAuth.getInstance().currentUser?.email
     }
 
     private fun loadProducts() {
@@ -44,22 +62,23 @@ class ListActivity : AppCompatActivity() {
                 return@addSnapshotListener
             }
 
-            val products = mutableListOf<Product>()
+            val products = mutableListOf<Pair<Product, String>>()
 
             for (snapshot in querySnapshot!!.documents) {
                 val item = snapshot.toObject(Product::class.java)
                 item?.let {
-                    products.add(it)
+                    val documentId = snapshot.id
+                    products.add(Pair(it, documentId))
                 }
             }
             adapter.setProducts(products)
         }
     }
 
-    inner class ProductAdapter(private val click: (Product) -> Unit) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
-        private var products: List<Product> = emptyList()
+    inner class ProductAdapter(private val loggedInUserEmail: String?, private val click: (Product, String) -> Unit) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
+        private var products: List<Pair<Product, String>> = emptyList()
 
-        fun setProducts(products: List<Product>) {
+        fun setProducts(products: List<Pair<Product, String>>) {
             this.products = products
             notifyDataSetChanged()
         }
@@ -70,8 +89,8 @@ class ListActivity : AppCompatActivity() {
                     // Handle item click
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
-                        val clickedProduct = products[position]
-                        click.invoke(clickedProduct)
+                        val (clickedProduct, documentId) = products[position]
+                        click.invoke(clickedProduct, documentId)
                     }
                 }
             }
@@ -83,7 +102,7 @@ class ListActivity : AppCompatActivity() {
                     .into(binding.imageView)
 
                 binding.titleTextView.text = product.title
-                binding.priceTextView.text = product.price+"원"
+                binding.priceTextView.text = product.price + "원"
             }
         }
 
@@ -93,7 +112,7 @@ class ListActivity : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(products[position])
+            holder.bind(products[position].first)
         }
 
         override fun getItemCount(): Int {
@@ -101,12 +120,4 @@ class ListActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
-
-
-
-
-
 
