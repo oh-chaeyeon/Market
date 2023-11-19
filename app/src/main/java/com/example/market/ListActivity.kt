@@ -1,9 +1,11 @@
 package com.example.market
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,12 +29,18 @@ class ListActivity : AppCompatActivity() {
         // Get the email of the logged-in user
         val loggedInUserEmail: String? = getCurrentLoggedInUserEmail()
 
+        val writeButton=findViewById<Button>(R.id.btnWrite)
+        writeButton.setOnClickListener {
+            val intent = Intent(this, WriteActivity::class.java)
+            startActivity(intent)
+        }
+
         firestore = FirebaseFirestore.getInstance()
         recyclerView = binding.recyclerView
 
         // Pass the user email to the adapter
         adapter = ProductAdapter(loggedInUserEmail) { clickedProduct, documentId ->
-            if (loggedInUserEmail == intent.getStringExtra("userEmail")) {
+            if (loggedInUserEmail == clickedProduct.name) {
                 // If the logged-in user is the author, go to EditActivity
                 val intent = Intent(this@ListActivity, EditActivity::class.java)
                 intent.putExtra("productModel", clickedProduct)
@@ -54,6 +62,8 @@ class ListActivity : AppCompatActivity() {
     private fun getCurrentLoggedInUserEmail(): String? {
         return FirebaseAuth.getInstance().currentUser?.email
     }
+
+
 
     private fun loadProducts() {
         firestore?.collection("products")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
@@ -103,6 +113,7 @@ class ListActivity : AppCompatActivity() {
 
                 binding.titleTextView.text = product.title
                 binding.priceTextView.text = product.price + "원"
+                binding.sellTextView.text = product.sell
             }
         }
 

@@ -1,4 +1,3 @@
-<!-- activity_list.xml -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,35 +15,35 @@
         android:layout_marginBottom="8dp"/>
 
     <Button
-        android:id="@+id/btnExcludeSold"
+        android:id="@+id/btnWrite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="판매된 상품 제외"
-        android:layout_below="@id/textViewTitle"
+        android:layout_marginStart="66dp"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="16dp"
+        android:layout_toEndOf="@id/textViewTitle"
+        android:text="글쓰기" />
 
-    <Button
-        android:id="@+id/btnPriceFilter"
+    <Spinner
+        android:id="@+id/spinnerFilter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/textViewTitle"
-        android:layout_marginStart="152dp"
-        android:layout_marginTop="17dp"
+        android:layout_marginStart="-381dp"
+        android:layout_marginTop="39dp"
         android:layout_marginEnd="16dp"
-        android:layout_toEndOf="@id/btnExcludeSold"
-        android:text="가격 필터" />
+        android:layout_toEndOf="@id/btnWrite" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="350dp"
-        android:layout_height="576dp"
-        android:layout_below="@id/btnExcludeSold"
+        android:layout_width="401dp"
+        android:layout_height="571dp"
+        android:layout_below="@id/spinnerFilter"
         android:layout_marginTop="8dp"
         android:clipToPadding="false"
         android:padding="16dp"
         android:scrollbars="vertical" />
 
 </RelativeLayout>
+
 
