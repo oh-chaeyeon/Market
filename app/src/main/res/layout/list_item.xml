@@ -1,0 +1,53 @@
+<!-- res/layout/list_item.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@id/imageView"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/priceTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:paddingTop="4dp" />
+
+        <TextView
+            android:id="@+id/sellTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:paddingTop="4dp" />
+
+        <!-- Add Button for Chat List -->
+        <Button
+            android:id="@+id/chatListButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="채팅목록보기"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/selectableItemBackground" />
+
+    </LinearLayout>
+</RelativeLayout>
