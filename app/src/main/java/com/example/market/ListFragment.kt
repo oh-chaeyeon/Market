@@ -1,38 +1,48 @@
 package com.example.market
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.market.databinding.ActivityListBinding
+import com.example.market.databinding.FragmentListBinding
 import com.example.market.databinding.ListItemBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class ListActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityListBinding
+class ListFragment : Fragment() {
+    private var _binding: FragmentListBinding? = null
+    private val binding get() = _binding!!
     private var firestore: FirebaseFirestore? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ProductAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityListBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // Get the email of the logged-in user
         val loggedInUserEmail: String? = getCurrentLoggedInUserEmail()
 
-        val writeButton=findViewById<Button>(R.id.btnWrite)
+        val writeButton = binding.btnWrite
         writeButton.setOnClickListener {
-            val intent = Intent(this, WriteActivity::class.java)
-            startActivity(intent)
+            // Replace with the code to navigate to WriteFragment
+            val writeFragment = WriteFragment()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, writeFragment)
+                .addToBackStack(null)
+                .commit()
         }
 
         firestore = FirebaseFirestore.getInstance()
@@ -41,20 +51,36 @@ class ListActivity : AppCompatActivity() {
         // Pass the user email to the adapter
         adapter = ProductAdapter(loggedInUserEmail) { clickedProduct, documentId ->
             if (loggedInUserEmail == clickedProduct.name) {
-                // If the logged-in user is the author, go to EditActivity
-                val intent = Intent(this@ListActivity, EditActivity::class.java)
-                intent.putExtra("productModel", clickedProduct)
-                intent.putExtra("documentId", documentId)
-                this@ListActivity.startActivity(intent)
+                // If the logged-in user is the author, replace with EditFragment
+                val editFragment = EditFragment()
+
+                // Pass data to EditFragment
+                val bundle = Bundle()
+                bundle.putParcelable("productModel", clickedProduct)
+                bundle.putString("documentId", documentId)
+                editFragment.arguments = bundle
+
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, editFragment)
+                    .addToBackStack(null)
+                    .commit()
             } else {
-                // If the logged-in user is not the author, go to DetailActivity
-                val intent = Intent(this@ListActivity, DetailActivity::class.java)
-                intent.putExtra("productModel", clickedProduct)
-                this@ListActivity.startActivity(intent)
+                // If the logged-in user is not the author, replace with DetailFragment
+                val detailFragment = DetailFragment()
+
+                // Pass data to DetailFragment
+                val bundle = Bundle()
+                bundle.putParcelable("productModel", clickedProduct)
+                detailFragment.arguments = bundle
+
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, detailFragment)
+                    .addToBackStack(null)
+                    .commit()
             }
         }
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         loadProducts()
     }
@@ -62,8 +88,6 @@ class ListActivity : AppCompatActivity() {
     private fun getCurrentLoggedInUserEmail(): String? {
         return FirebaseAuth.getInstance().currentUser?.email
     }
-
-
 
     private fun loadProducts() {
         firestore?.collection("products")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
@@ -85,7 +109,8 @@ class ListActivity : AppCompatActivity() {
         }
     }
 
-    inner class ProductAdapter(private val loggedInUserEmail: String?, private val click: (Product, String) -> Unit) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
+    inner class ProductAdapter(private val loggedInUserEmail: String?, private val click: (Product, String) -> Unit) :
+        RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
         private var products: List<Pair<Product, String>> = emptyList()
 
         fun setProducts(products: List<Pair<Product, String>>) {
@@ -130,5 +155,9 @@ class ListActivity : AppCompatActivity() {
             return products.size
         }
     }
-}
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

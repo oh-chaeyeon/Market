@@ -1,25 +1,35 @@
 package com.example.market
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.example.market.databinding.ActivityEditBinding
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.example.market.databinding.FragmentEditBinding
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Suppress("DEPRECATION")
-class EditActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityEditBinding
+class EditFragment : Fragment() {
+    private var _binding: FragmentEditBinding? = null
+    private val binding get() = _binding!!
     private var firestore: FirebaseFirestore? = null
     private var product: Product? = null
     private var documentId: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityEditBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentEditBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         firestore = FirebaseFirestore.getInstance()
-        product = intent.getParcelableExtra("productModel")
-        documentId = intent.getStringExtra("documentId")
+        product = arguments?.getParcelable("productModel")
+        documentId = arguments?.getString("documentId")
 
         binding.priceTextView2.hint = product?.price
         binding.sellTextView2.hint = product?.sell
@@ -47,9 +57,14 @@ class EditActivity : AppCompatActivity() {
                 "sell" to modifiedSellStatus
             )
         )?.addOnSuccessListener {
-            finish()
+            activity?.finish()
         }?.addOnFailureListener {
             // Handle failure (e.g., show an error message)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
