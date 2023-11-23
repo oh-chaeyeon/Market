@@ -41,7 +41,8 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/cute_icon"
-        tools:layout_editor_absoluteY="191dp" />
+        tools:layout_editor_absoluteY="191dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/home_name"

@@ -32,7 +32,8 @@
         android:layout_marginStart="-381dp"
         android:layout_marginTop="39dp"
         android:layout_marginEnd="16dp"
-        android:layout_toEndOf="@id/btnWrite" />
+        android:layout_toEndOf="@id/btnWrite"
+        android:minHeight="48dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

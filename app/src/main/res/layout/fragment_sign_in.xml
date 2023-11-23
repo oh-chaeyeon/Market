@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#00FFFFFF"
-    tools:context=".SignInActivity">
+    tools:context=".SignInFragment">
 
     <TextView
         android:id="@+id/signin_textView"
@@ -49,6 +49,7 @@
         android:ems="10"
         android:hint="아이디를 입력해주세요"
         android:inputType="textPassword"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,6 +63,7 @@
         android:ems="10"
         android:hint="비밀번호를 입력해주세요"
         android:inputType="textPassword"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
