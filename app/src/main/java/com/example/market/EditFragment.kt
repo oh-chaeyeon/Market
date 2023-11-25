@@ -17,10 +17,10 @@ class EditFragment : Fragment() {
     private var documentId: String? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater, container2: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEditBinding.inflate(inflater, container, false)
+        _binding = FragmentEditBinding.inflate(inflater, container2, false)
         return binding.root
     }
 
@@ -32,7 +32,7 @@ class EditFragment : Fragment() {
         documentId = arguments?.getString("documentId")
 
         binding.priceTextView2.hint = product?.price
-        binding.sellTextView2.hint = product?.sell
+        binding.sellSwitch.isChecked = product?.sell == "판매완료"
 
         binding.button4.setOnClickListener {
             updateProduct()
@@ -41,14 +41,7 @@ class EditFragment : Fragment() {
 
     private fun updateProduct() {
         var modifiedPrice = binding.priceTextView2.text.toString()
-        var modifiedSellStatus = binding.sellTextView2.text.toString()
-
-        if (modifiedPrice.isBlank()) {
-            modifiedPrice = product?.price.orEmpty()
-        }
-        if (modifiedSellStatus.isBlank()) {
-            modifiedSellStatus = product?.sell.orEmpty()
-        }
+        val modifiedSellStatus = if (binding.sellSwitch.isChecked) "판매완료" else "판매중"
 
         val productRef = firestore?.collection("products")?.document(documentId!!)
         productRef?.update(
@@ -57,11 +50,12 @@ class EditFragment : Fragment() {
                 "sell" to modifiedSellStatus
             )
         )?.addOnSuccessListener {
-            activity?.finish()
+            activity?.supportFragmentManager?.popBackStack()
         }?.addOnFailureListener {
             // Handle failure (e.g., show an error message)
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

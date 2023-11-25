@@ -22,10 +22,10 @@ class WriteFragment : Fragment() {
     private var imageUri: Uri? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater, container2: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_write, container, false)
+        return inflater.inflate(R.layout.fragment_write, container2, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,7 +43,7 @@ class WriteFragment : Fragment() {
 
             // ListFragment로 전환
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container, ListFragment())
+            transaction.replace(R.id.fragment_container2, ListFragment())
             transaction.addToBackStack(null)
             transaction.commit()
         }

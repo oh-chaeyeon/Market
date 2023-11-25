@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun replaceWithMainActivity2() {
-        val mainActivity2Intent = Intent(this, MainActivity2::class.java)
+        val mainActivity2Intent = Intent(this, BottomActivity::class.java)
         startActivity(mainActivity2Intent)
         finish()
     }
