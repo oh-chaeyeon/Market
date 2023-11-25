@@ -8,14 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity2 : AppCompatActivity() {
+class BottomActivity : AppCompatActivity() {
 
     private lateinit var fragmentContainer: FrameLayout
     private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main2)
+        setContentView(R.layout.activity_bottom)
 
         fragmentContainer = findViewById(R.id.fragment_container2)
         bottomNavigationView = findViewById(R.id.bottomNaviView)
