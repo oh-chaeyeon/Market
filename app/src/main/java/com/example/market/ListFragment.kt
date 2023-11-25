@@ -1,10 +1,12 @@
 package com.example.market
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +22,10 @@ class ListFragment : Fragment() {
     private var firestore: FirebaseFirestore? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ProductAdapter
+
+    private lateinit var spinner: Spinner
+    private var selectedFilter: String = "전체"
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,8 +45,14 @@ class ListFragment : Fragment() {
         writeButton.setOnClickListener {
             // Replace with the code to navigate to WriteFragment
             val writeFragment = WriteFragment()
+
+            // Pass the logged-in user email to WriteFragment
+            val bundle = Bundle()
+            bundle.putString("loggedInUserEmail", loggedInUserEmail)
+            writeFragment.arguments = bundle
+
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, writeFragment)
+                .replace(R.id.fragment_container2, writeFragment)
                 .addToBackStack(null)
                 .commit()
         }
@@ -61,7 +73,7 @@ class ListFragment : Fragment() {
                 editFragment.arguments = bundle
 
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, editFragment)
+                    .replace(R.id.fragment_container2, editFragment)
                     .addToBackStack(null)
                     .commit()
             } else {
@@ -74,13 +86,35 @@ class ListFragment : Fragment() {
                 detailFragment.arguments = bundle
 
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, detailFragment)
+                    .replace(R.id.fragment_container2, detailFragment)
                     .addToBackStack(null)
                     .commit()
             }
         }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        // Spinner 초기화와 관련된 부분을 ListActivity.kt에서 가져옴
+        spinner = binding.spinnerFilter
+
+        // Spinner의 아이템과 어댑터 설정
+        val filterArray = resources.getStringArray(R.array.itemList)
+        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, filterArray)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = spinnerAdapter
+
+        // Spinner의 선택 리스너 설정
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedFilter = filterArray[position]
+                // 수정된 함수로 변경
+                loadProductsWithFilter()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // 아무 작업도 하지 않음
+            }
+        }
 
         loadProducts()
     }
@@ -109,7 +143,9 @@ class ListFragment : Fragment() {
         }
     }
 
-    inner class ProductAdapter(private val loggedInUserEmail: String?, private val click: (Product, String) -> Unit) :
+    inner class ProductAdapter(
+        private val loggedInUserEmail: String?,
+        private val click: (Product, String) -> Unit) :
         RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
         private var products: List<Pair<Product, String>> = emptyList()
 
@@ -156,8 +192,33 @@ class ListFragment : Fragment() {
         }
     }
 
+    private fun loadProductsWithFilter() {
+        firestore?.collection("products")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+            if (firebaseFirestoreException != null) {
+                // 오류 처리 (로그, 메시지 표시 등)
+                return@addSnapshotListener
+            }
+
+            val products = mutableListOf<Pair<Product, String>>()
+
+            for (snapshot in querySnapshot!!.documents) {
+                val item = snapshot.toObject(Product::class.java)
+                item?.let {
+                    val documentId = snapshot.id
+
+                    if (selectedFilter == "전체" || it.sell == selectedFilter) {
+                        products.add(Pair(it, documentId))
+                    }
+                }
+            }
+            adapter.setProducts(products)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+
 }
