@@ -73,7 +73,7 @@ class ListFragment : Fragment() {
                 editFragment.arguments = bundle
 
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, editFragment)
+                    .replace(R.id.fragment_container2, editFragment)
                     .addToBackStack(null)
                     .commit()
             } else {
@@ -86,7 +86,7 @@ class ListFragment : Fragment() {
                 detailFragment.arguments = bundle
 
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, detailFragment)
+                    .replace(R.id.fragment_container2, detailFragment)
                     .addToBackStack(null)
                     .commit()
             }
